@@ -15,27 +15,27 @@
  * =============================================================================
  */
 
-import * as posenet_module from '@tensorflow-models/posenet';
-import * as facemesh_module from '@tensorflow-models/facemesh';
-import * as tf from '@tensorflow/tfjs';
-import * as paper from 'paper';
-import Stats from 'stats.js';
-import "babel-polyfill";
+import * as posenet_module from '../@tensorflow-models/posenet';
+import * as facemesh_module from '../@tensorflow-models/facemesh';
+import * as tf from '../@tensorflow/tfjs';
+import * as paper from '../paper';
+import Stats from '../stats.js';
+import "../babel-polyfill";
 
-import {drawKeypoints, drawPoint, drawSkeleton, isMobile, toggleLoadingUI, setStatusText} from './utils/demoUtils';
-import {SVGUtils} from './utils/svgUtils'
-import {PoseIllustration} from './illustrationGen/illustration';
-import {Skeleton, facePartName2Index} from './illustrationGen/skeleton';
-import {FileUtils} from './utils/fileUtils';
+// import {drawKeypoints, drawPoint, drawSkeleton, isMobile, toggleLoadingUI, setStatusText} from './utils/demoUtils';
+// import {SVGUtils} from './utils/svgUtils'
+// import {PoseIllustration} from './illustrationGen/illustration';
+// import {Skeleton, facePartName2Index} from './illustrationGen/skeleton';
+// import {FileUtils} from './utils/fileUtils';
 
-import * as girlSVG from './resources/illustration/girl.svg';
-import * as boySVG from './resources/illustration/boy.svg';
-import * as abstractSVG from './resources/illustration/abstract.svg';
-import * as blathersSVG from './resources/illustration/blathers.svg';
-import * as tomNookSVG from './resources/illustration/tom-nook.svg';
-import * as asdf from './resources/illustration/asdf.svg';
-import * as yeom from './resources/illustration/yeom.svg';
-import * as haha from './resources/illustration/haha.svg';
+// import * as girlSVG from './resources/illustration/girl.svg';
+// import * as boySVG from './resources/illustration/boy.svg';
+// import * as abstractSVG from './resources/illustration/abstract.svg';
+// import * as blathersSVG from './resources/illustration/blathers.svg';
+// import * as tomNookSVG from './resources/illustration/tom-nook.svg';
+// import * as asdf from './resources/illustration/asdf.svg';
+// import * as yeom from './resources/illustration/yeom.svg';
+// import * as haha from './resources/illustration/haha.svg';
 
 // Camera stream video element
 let video;

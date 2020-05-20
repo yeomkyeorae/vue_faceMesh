@@ -31,11 +31,11 @@
 	import * as paper from 'paper'
 	import "babel-polyfill"
 
-	import { drawKeypoints, drawPoint, drawSkeleton, isMobile, toggleLoadingUI, setStatusText } from './utils/demoUtils';
+	import { drawKeypoints, drawPoint, drawSkeleton, toggleLoadingUI, setStatusText } from './utils/demoUtils';
 	import { SVGUtils } from './utils/svgUtils'
 	import { PoseIllustration } from './illustrationGen/illustration';
 	import { Skeleton, facePartName2Index } from './illustrationGen/skeleton';
-	import { FileUtils } from './utils/fileUtils';
+	// import { FileUtils } from './utils/fileUtils';
 
 	import * as girlSVG from './resources/illustration/girl.svg';
 	import * as boySVG from './resources/illustration/boy.svg';
@@ -64,7 +64,7 @@
 				nmsRadius: 30.0,
 
 				// Misc
-				mobile: false,
+				// mobile: false,
 				// const stats = new Stats();
 				avatarSvgs: {
 					'girl': girlSVG.default,
@@ -199,13 +199,13 @@
 				poseDetectionFrame();
 			},
 			setupCanvas() {
-				this.mobile = isMobile();
-				if (this.mobile) {
-					this.canvasWidth = Math.min(window.innerWidth, window.innerHeight);
-					this.canvasHeight = this.canvasWidth;
-					this.videoWidth *= 0.7;
-					this.videoHeight *= 0.7;
-				}
+				// this.mobile = isMobile();
+				// if (this.mobile) {
+				// 	this.canvasWidth = Math.min(window.innerWidth, window.innerHeight);
+				// 	this.canvasHeight = this.canvasWidth;
+				// 	this.videoWidth *= 0.7;
+				// 	this.videoHeight *= 0.7;
+				// }
 
 				this.canvasScope = paper.default;
 				let canvas = document.querySelector('.illustration-canvas');
@@ -265,9 +265,9 @@
 			}
 			navigator.getUserMedia = navigator.getUserMedia ||
 				navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-			FileUtils.setDragDropHandler((result) => {
-				this.parseSVG(result)
-			});
+			// FileUtils.setDragDropHandler((result) => {
+			// 	this.parseSVG(result)
+			// });
 			this.bindPage();
 		}
 	}

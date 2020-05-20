@@ -1,17 +1,16 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <FaceMesh />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import FaceMesh from './components/FaceMesh.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    FaceMesh
   }
 }
 </script>

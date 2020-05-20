@@ -133,7 +133,7 @@ export class Bone {
         this.boneColor = ColorUtils.fromStringHash(this.name);
         this.boneColor.saturation += 0.5;
         return this;
-    };
+    }
 
     // Finds a point's bone transform.
     // Let anchor be the closest point on the bone to the point.

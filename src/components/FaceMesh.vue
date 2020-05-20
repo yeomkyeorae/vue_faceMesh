@@ -35,9 +35,7 @@
 	import { SVGUtils } from './utils/svgUtils'
 	import { PoseIllustration } from './illustrationGen/illustration';
 	import { Skeleton, facePartName2Index } from './illustrationGen/skeleton';
-	// import {
-	// 	FileUtils
-	// } from './utils/fileUtils';
+	import { FileUtils } from './utils/fileUtils';
 
 	import * as girlSVG from './resources/illustration/girl.svg';
 	import * as boySVG from './resources/illustration/boy.svg';
@@ -124,7 +122,8 @@
 				keypointCanvas.width = this.videoWidth;
 				keypointCanvas.height = this.videoHeight;
 
-				async function poseDetectionFrame(th) {
+				let th = this;
+				async function poseDetectionFrame() {
 					let poses = [];
 
 					videoCtx.clearRect(0, 0, th.videoWidth, th.videoHeight);
@@ -197,7 +196,7 @@
 					requestAnimationFrame(poseDetectionFrame);
 				}
 
-				poseDetectionFrame(this);
+				poseDetectionFrame();
 			},
 			setupCanvas() {
 				this.mobile = isMobile();
@@ -230,7 +229,6 @@
 				this.facemesh = await facemesh_module.load();
 
 				setStatusText('Loading Avatar file...');
-				// let t0 = new Date();
 				await this.parseSVG(Object.values(this.avatarSvgs)[0]);
 
 				setStatusText('Setting up camera...');
@@ -252,7 +250,7 @@
 			},
 			async parseSVG(target) {
 				let svgScope = await SVGUtils.importSVG(target /* SVG string or file path */ );
-				let skeleton = new Skeleton(this.svgScope);
+				let skeleton = new Skeleton(svgScope);
 				this.illustration = new PoseIllustration(this.canvasScope);
 				this.illustration.bindSkeleton(skeleton, svgScope);
 			}
@@ -267,9 +265,9 @@
 			}
 			navigator.getUserMedia = navigator.getUserMedia ||
 				navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-			// FileUtils.setDragDropHandler((result) => {
-			// 	this.parseSVG(result)
-			// });
+			FileUtils.setDragDropHandler((result) => {
+				this.parseSVG(result)
+			});
 			this.bindPage();
 		}
 	}

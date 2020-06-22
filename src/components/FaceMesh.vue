@@ -4,15 +4,14 @@
 			<span class="spinner-text" id="status">
 				Loading PoseNet model...
 			</span>
-			<div class="sk-spinner sk-spinner-pulse"></div>
 		</div>
 		<div class="canvas-container">
 			<div id='main' style='display:none'>
-				<video id="video" playsinline style=" -moz-transform: scaleX(-1);
+				<video :src="require('./mine2.mp4')" id="video" playsinline style=" -moz-transform: scaleX(-1);
             -o-transform: scaleX(-1);
             -webkit-transform: scaleX(-1);
             transform: scaleX(-1);
-            display: none;
+			display: none;
             ">
 				</video>
 				<canvas id="output" class="camera-canvas"></canvas>
@@ -20,7 +19,6 @@
 			</div>
 			<canvas class="illustration-canvas"></canvas>
 		</div>
-		<!-- <script src="camera.js"></script> -->
 	</div>
 </template>
 
@@ -35,7 +33,6 @@
 	import { SVGUtils } from './utils/svgUtils'
 	import { PoseIllustration } from './illustrationGen/illustration';
 	import { Skeleton, facePartName2Index } from './illustrationGen/skeleton';
-	// import { FileUtils } from './utils/fileUtils';
 
 	import * as girlSVG from './resources/illustration/girl.svg';
 	import * as boySVG from './resources/illustration/boy.svg';
@@ -48,29 +45,24 @@
 				video: {},
 				videoWidth: 300,
 				videoHeight: 300,
-
 				// Canvas
 				faceDetection: null,
 				illustration: null,
 				canvasScope: null,
 				canvasWidth: 800,
 				canvasHeight: 800,
-
 				// ML models
 				facemesh: null,
 				posenet: null,
 				minPoseConfidence: 0.15,
 				minPartConfidence: 0.1,
 				nmsRadius: 30.0,
-
-				// Misc
-				// mobile: false,
-				// const stats = new Stats();
+				// SVG 이미지
 				avatarSvgs: {
 					'girl': girlSVG.default,
 					'boy': boySVG.default,
 				},
-
+				// PoseNet 설정(?)
 				defaultPoseNetArchitecture: 'MobileNetV1',
 				defaultQuantBytes: 2,
 				defaultMultiplier: 1.0,
@@ -89,26 +81,28 @@
 				video.width = this.videoWidth;
 				video.height = this.videoHeight;
 
-				const stream = await navigator.mediaDevices.getUserMedia({
-					'audio': false,
-					'video': {
-						facingMode: 'user',
-						width: this.videoWidth,
-						height: this.videoHeight,
-					},
-				});
-				video.srcObject = stream;
+				// const stream = await navigator.mediaDevices.getUserMedia({
+				// 	'audio': false,
+				// 	'video': {
+				// 		facingMode: 'user',
+				// 		width: this.videoWidth,
+				// 		height: this.videoHeight,
+				// 	},
+				// });
+				// video.srcObject = stream;
 
-				return new Promise((resolve) => {
-					video.onloadedmetadata = () => {
-						resolve(video);
-					};
-				});
+				// return new Promise((resolve) => {
+				// 	video.onloadedmetadata = () => {
+				// 		// console.log(123123123)
+				// 		resolve(video);
+				// 	};
+				// });
+				return video
 			},
 			async loadVideo() {
 				const video = await this.setupCamera();
+				video.volume = 0;
 				video.play();
-
 				return video;
 			},
 			detectPoseInRealTime(video) {
@@ -149,6 +143,7 @@
 					input.dispose();
 
 					keypointCtx.clearRect(0, 0, th.videoWidth, th.videoHeight);
+					// 사용자 keypoints에 빨간, 파란 점 찍는 부분
 					if (th.guiState.debug.showDetectionDebug) {
 						poses.forEach(({
 							score,
@@ -168,7 +163,7 @@
 					}
 
 					th.canvasScope.project.clear();
-
+					// 아바타가 따라할 수 있도록 그리는 부분
 					if (poses.length >= 1 && th.illustration) {
 						Skeleton.flipPose(poses[0]);
 
@@ -190,23 +185,11 @@
 						th.canvasHeight / th.videoHeight,
 						new th.canvasScope.Point(0, 0));
 
-					// End monitoring code for frames per second
-					// stats.end();
-
 					requestAnimationFrame(poseDetectionFrame);
 				}
-
 				poseDetectionFrame();
 			},
 			setupCanvas() {
-				// this.mobile = isMobile();
-				// if (this.mobile) {
-				// 	this.canvasWidth = Math.min(window.innerWidth, window.innerHeight);
-				// 	this.canvasHeight = this.canvasWidth;
-				// 	this.videoWidth *= 0.7;
-				// 	this.videoHeight *= 0.7;
-				// }
-
 				this.canvasScope = paper.default;
 				let canvas = document.querySelector('.illustration-canvas');
 				canvas.width = this.canvasWidth;
@@ -218,6 +201,7 @@
 
 				toggleLoadingUI(true);
 				setStatusText('Loading PoseNet model...');
+				// PoseNet 모델 불러오기
 				this.posenet = await posenet_module.load({
 					architecture: this.defaultPoseNetArchitecture,
 					outputStride: this.defaultStride,
@@ -226,9 +210,11 @@
 					quantBytes: this.defaultQuantBytes
 				});
 				setStatusText('Loading FaceMesh model...');
+				// FaceMesh 모델 불러오기
 				this.facemesh = await facemesh_module.load();
 
 				setStatusText('Loading Avatar file...');
+				// 아바타 불러오기
 				await this.parseSVG(Object.values(this.avatarSvgs)[0]);
 
 				setStatusText('Setting up camera...');
@@ -241,10 +227,6 @@
 					info.style.display = 'block';
 					throw e;
 				}
-
-				// setupGui([], posenet);
-				// setupFPS();
-
 				toggleLoadingUI(false);
 				this.detectPoseInRealTime(this.video, this.posenet);
 			},
@@ -265,9 +247,7 @@
 			}
 			navigator.getUserMedia = navigator.getUserMedia ||
 				navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-			// FileUtils.setDragDropHandler((result) => {
-			// 	this.parseSVG(result)
-			// });
+
 			this.bindPage();
 		}
 	}
@@ -280,7 +260,6 @@
 		align-items: center;
 		justify-content: center;
 	}
-
 	.canvas-container {
 		width: 800px;
 		max-width: 100%;
@@ -288,7 +267,6 @@
 		justify-content: center;
 		position: relative;
 	}
-
 	.camera-canvas {
 		position: absolute;
 		transform: scale(0.5, 0.5);
@@ -296,17 +274,14 @@
 		left: 10px;
 		top: 10px;
 	}
-
 	#main {
 		left: 0;
 		top: 0;
 		position: absolute;
 	}
-
 	.illustration-canvas {
 		border: 1px solid #eeeeee;
 	}
-
 	.footer {
 		position: fixed;
 		left: 0;
@@ -314,13 +289,11 @@
 		width: 100%;
 		color: black;
 	}
-
 	.footer-text {
 		max-width: 600px;
 		text-align: center;
 		margin: auto;
 	}
-
 	@media only screen and (max-width: 600px) {
 
 		.footer-text,
@@ -328,44 +301,28 @@
 			display: none;
 		}
 	}
-
-	.sk-spinner-pulse {
-		width: 20px;
-		height: 20px;
-		margin: auto 10px;
-		float: left;
-		background-color: #333;
-		border-radius: 100%;
-		-webkit-animation: sk-pulseScaleOut 1s infinite ease-in-out;
-		animation: sk-pulseScaleOut 1s infinite ease-in-out;
-	}
-
 	@-webkit-keyframes sk-pulseScaleOut {
 		0% {
 			-webkit-transform: scale(0);
 			transform: scale(0);
 		}
-
 		100% {
 			-webkit-transform: scale(1.0);
 			transform: scale(1.0);
 			opacity: 0;
 		}
 	}
-
 	@keyframes sk-pulseScaleOut {
 		0% {
 			-webkit-transform: scale(0);
 			transform: scale(0);
 		}
-
 		100% {
 			-webkit-transform: scale(1.0);
 			transform: scale(1.0);
 			opacity: 0;
 		}
 	}
-
 	.spinner-text {
 		float: left;
 	}
